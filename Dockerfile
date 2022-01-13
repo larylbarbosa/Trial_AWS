@@ -1,16 +1,15 @@
 # creating a Docker build environment for compile.
-from golang:alpine as build-env
-workdir /app
-add . /app
+FROM golang:alpine AS build-env
+WORKDIR /app
+ADD . /app
 
 # creating the Docker runtime image, using alpine image.
-from alpine
+FROM alpine
 # install CA-certs for HTTPS
-run apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
-workdir /app
-copy --from=build-env /app/goserver /app
+RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
+WORKDIR /app
+COPY --from=build-env /app/goserver /app
 
-EXPOSE 8030
+EXPOSE 8081
 
 ENTRYPOINT ./goserver
-
