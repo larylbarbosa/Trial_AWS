@@ -21,6 +21,7 @@ func main() {
 		Addr:    ":8080",
 		Handler: mux,
 	}
+    log.Print("Listening")
 	log.Fatal(s.ListenAndServe())
 }
 
