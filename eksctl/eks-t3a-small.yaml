@@ -1,0 +1,12 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: k8s-spintly  # this will be used to name the EC2 instances in the cluster
+  region: ap-south-1 # request to use the ap-south-1 (Mumbai) region (for Indian audiences)
+
+managedNodeGroups:
+  - name: ng-t3a-small
+    labels: { environment: "test", instances: "t3a.small" }
+    desiredCapacity: 4 #setting up a nodegroup with fixed instances.
+    instanceType: "t3a.small"
