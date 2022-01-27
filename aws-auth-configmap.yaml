@@ -1,0 +1,23 @@
+apiVersion: v1
+data:
+  mapRoles: |
+    - groups:
+      - system:bootstrappers
+      - system:nodes
+      rolearn: arn:aws:iam::399029391937:role/eksctl-k8s-spintly-nodegroup-ng-t-NodeInstanceRole-1Q1PL0YF38OW0
+      username: system:node:{{EC2PrivateDNSName}}
+  mapUsers: |
+    - userarn: arn:aws:iam::399029391937:user/k8s-cluster-admin # arn:aws:iam::245891355135:user/k8s-cluster-admin
+      username: k8s-cluster-admin
+      groups:
+        - system:masters
+kind: ConfigMap
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","data":{"mapRoles":"- groups:\n  - system:bootstrappers\n  - system:nodes\n  rolearn: arn:aws:iam::399029391937:role/eksctl-k8s-spintly-nodegroup-ng-t-NodeInstanceRole-1Q1PL0YF38OW0\n  username: system:node:{{EC2PrivateDNSName}}\n","mapUsers":"- userarn: arn:aws:iam::399029391937:user/k8s-cluster-admin # arn:aws:iam::245891355135:user/k8s-cluster-admin\n  username: k8s-cluster-admin\n  groups:\n    - system:masters\n- userarn: arn:aws:iam::245891355135:user/k8s-prod-viewer\n  username: k8s-prod-viewer\n  groups:\n    - prod-viewer-role\n- userarn: arn:aws:iam::399029391937:user/saams-jenkins\n  username: saams-jenkins\n  groups:\n    - system:masters\n"},"kind":"ConfigMap","metadata":{"annotations":{},"creationTimestamp":"2021-09-28T16:49:22Z","name":"aws-auth","namespace":"kube-system","resourceVersion":"114688","uid":"88cd686a-3231-437f-bf6b-8d286fb9f80a"}}
+  creationTimestamp: "2021-09-28T16:49:22Z"
+  name: aws-auth
+  namespace: kube-system
+  resourceVersion: "4236044"
+  uid: 88cd686a-3231-437f-bf6b-8d286fb9f80a
