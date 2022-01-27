@@ -1,67 +1,65 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: infrastructure-management   # giving the label infrastructure-management, to help with object referencing (necessary for load balancing)
+  name: trial-aws   # giving the label infrastructure-management, to help with object referencing (necessary for load balancing)
 spec:
   replicas: 1               # creating a few replicas of the same container
   selector:
     matchLabels:
-      service: infrastructure-management
+      service: trial-aws
   template:
     metadata:
       labels:
-        service: infrastructure-management
+        service: trial-aws
     spec:
       containers:
-      - name: infrastructure-management
-        image: 399029391937.dkr.ecr.ap-south-1.amazonaws.com/acaas/infrastructure-management:$IMAGETAG          # added placeholder which Jenkins will update pre-deploy.
+      - name: trial-aws
+        image: 245891355135.dkr.ecr.ap-south-1.amazonaws.com/trial:latest          # added placeholder which Jenkins will update pre-deploy.
         imagePullPolicy: Always
-        livenessProbe:
-          initialDelaySeconds: 5   # start probing after some time (enough time to boot)
-          periodSeconds: 30         # repeat the health check periodically
-          httpGet:
-            path: /infrastructureManagement/health # check the health of the server
-            port: 8030
+#         livenessProbe:
+#           initialDelaySeconds: 5   # start probing after some time (enough time to boot)
+#           periodSeconds: 30         # repeat the health check periodically
+#           httpGet:
+#             path: /infrastructureManagement/health # check the health of the server
+#             port: 8030
         resources:
           requests:
-            memory: "128Mi"   # memory request constraints on dev are restrictive.
-            cpu: "250m"
+            memory: "64Mi"   # memory request constraints on dev are restrictive.
+            cpu: "32m"
           limits:
             memory: "256Mi"   # overprovision on prod to prevent out of memory issues. (kubernetes restarts out of memory pods)
             cpu: "500m"
         ports:
-        - containerPort: 8030
+        - containerPort: 8081
         envFrom:              # obtain the ENV vars from a k8s secret
           - secretRef:
-              name: infrastructure-management
-      nodeSelector:
-        environment: test
-
+              name: trial-aws
+              
 ---
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: infrastructure-management
+  name: trial-aws
 spec:
   ports:
-    - port: 8030
+    - port: 8081
       protocol: TCP
   type: NodePort
   selector:
-    service: infrastructure-management
+    service: trial-aws
 
 ---
 
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler     # using HPA to horizontally scale the services on load.
 metadata:
-  name: infrastructure-management
+  name: trial-aws
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: infrastructure-management       # details of the deployment to autoscale
+    name: trial-aws       # details of the deployment to autoscale
   minReplicas: 1
   maxReplicas: 2
   metrics:
