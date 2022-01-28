@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress     # using ALB Ingress from the ALB ingress controller.
+metadata:
+  name: trial-ingress
+  namespace: default
+  annotations:
+    # alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]' # not adding {"HTTP":80}, so that HTTP is closed.
+    # Fill the ARN of the certificate
+    # alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-south-1:399029391937:certificate/811e3483-3d0f-435a-b28d-d6e9f429deda
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip         # directly connect to IP address of the Pod.
+
+# this is used to automate the creation of targetGroups used by ALB.
+spec:
+  # tls:  # adding TLS support!
+  # - hosts:
+  #   - devk.acaas.api.spintly.com
+  #   secretName: devk-acaas-api-z8kk8
+  rules:
+  - http:
+      paths:
+        - path: /ping
+          pathType: Prefix
+          backend: 
+            service:
+              name: trial-aws
+              port:
+                number: 8081
